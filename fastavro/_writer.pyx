@@ -234,7 +234,7 @@ cpdef inline write_float(bytearray fo, float datum, schema=None):
 
 cdef union double_long:
     double d
-    unsigned long n
+    unsigned long long n
 
 
 cpdef inline write_double(bytearray fo, double datum, schema=None):
