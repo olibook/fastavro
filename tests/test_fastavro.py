@@ -817,3 +817,52 @@ def test_cython_python():
         # CPython should use Cython.
         assert getattr(_reader, 'CYTHON_MODULE')
         assert getattr(_writer, 'CYTHON_MODULE')
+
+
+def test_union_records():
+    #
+    schema = {
+        'name': 'test_name',
+        'namespace': 'test',
+        'type': 'record',
+        'fields': [
+            {
+                'name': 'val',
+                'type': [
+                    {
+                        'name': 'a',
+                        'namespace': 'common',
+                        'type': 'record',
+                        'fields': [
+                            {'name': 'x', 'type': 'int'},
+                            {'name': 'y', 'type': 'int'},
+                        ],
+                    },
+                    {
+                        'name': 'b',
+                        'namespace': 'common',
+                        'type': 'record',
+                        'fields': [
+                            {'name': 'x', 'type': 'int'},
+                            {'name': 'y', 'type': 'int'},
+                            {'name': 'z', 'type': ['null', 'int']},
+                        ],
+                    }
+                ]
+            }
+        ]
+    }
+
+    data = {
+        'val': {
+            'x': 3,
+            'y': 4,
+            'z': 5,
+        }
+    }
+    encoded = bytearray()
+    fastavro.dump(encoded, data, schema)
+
+    decoded = fastavro.load(MemoryIO(encoded), schema)
+
+    assert decoded == data
