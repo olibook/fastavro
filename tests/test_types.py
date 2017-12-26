@@ -1,9 +1,8 @@
-import fastavro
-
-import pytest
-
+from collections import OrderedDict
 from io import BytesIO
 
+import fastavro
+import pytest
 
 schema = {
   "fields": [
@@ -91,3 +90,13 @@ def test_int_in_string_raises():
 
     with pytest.raises((TypeError, ValueError, AttributeError)):
         serialize(schema, *records)
+
+
+def test_ordered_dicts_fails():
+    records = [OrderedDict({
+        'str_null': 'str',
+        'str': 'str',
+        'integ_null': 21,
+        'integ': 21,
+    })]
+    serialize(schema, *records)
